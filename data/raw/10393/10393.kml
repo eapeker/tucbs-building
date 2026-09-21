@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Folder>
+        <name>model</name>
+        <description>Created with &lt;a href="http://sketchup.com"&gt;SketchUp&lt;/a&gt;</description>
+        <visibility>1</visibility>
+        <LookAt>
+            <heading>34.01147978066</heading>
+            <tilt>56.32289252067</tilt>
+            <latitude>41.4086567153035</latitude>
+            <longitude>41.432251736398</longitude>
+            <range>56.08392038314</range>
+            <altitude>20.5195899061505</altitude>
+        </LookAt>
+        <Folder>
+            <name>Tour</name>
+            <Placemark>
+                <name>Scene 1</name>
+                <visibility>1</visibility>
+                <LookAt>
+                    <heading>34.01147978066</heading>
+                    <tilt>56.32289252067</tilt>
+                    <latitude>41.4086567153035</latitude>
+                    <longitude>41.432251736398</longitude>
+                    <range>56.08392038314</range>
+                    <altitude>20.5195899061505</altitude>
+                </LookAt>
+            </Placemark>
+        </Folder>
+        <Placemark>
+            <name>Model</name>
+            <description></description>
+            <Style id="default" />
+            <Model>
+                <altitudeMode>clampToGround</altitudeMode>
+                <Location>
+                    <latitude>41.4086567153035</latitude>
+                    <longitude>41.432251736398</longitude>
+                    <altitude>5.82894628048052</altitude>
+                </Location>
+                <Orientation>
+                    <heading>-0</heading>
+                    <tilt>0</tilt>
+                    <roll>0</roll>
+                </Orientation>
+                <Scale>
+                    <x>1</x>
+                    <y>1</y>
+                    <z>1</z>
+                </Scale>
+                <Link>
+                    <href>10393.dae</href>
+                </Link>
+            </Model>
+        </Placemark>
+    </Folder>
+</kml>
