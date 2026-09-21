@@ -1,0 +1,9 @@
+{
+  "name": "tucbs-building-tools",
+  "private": true,
+  "description": "Node.js tools used to convert CityJSON buildings into 3D Tiles (glTF + tiling), used alongside the conda-managed cjio/citygml-tools pipeline.",
+  "dependencies": {
+    "obj2gltf": "3.2.0",
+    "3d-tiles-tools": "0.5.4"
+  }
+}

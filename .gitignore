@@ -1,3 +1,8 @@
+# Downloaded/local tools (fetched by scripts/setup_citygml_tools.sh, scripts/setup_node.sh, npm install)
+tools/citygml-tools/
+tools/node/
+tools/node_modules/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

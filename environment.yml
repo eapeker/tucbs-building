@@ -1,0 +1,13 @@
+name: tucbs-building
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - cjio==0.10.1
+      - pyproj==3.7.2
+      - triangle==20250106
+# Node.js is NOT managed by conda here (conda-forge downloads hit an SSL
+# verification error in this environment). It's fetched as a portable binary
+# instead by scripts/setup_node.sh.
