@@ -66,6 +66,24 @@ bug kept placing buildings sideways or flattened. A second attempt using the lib
 own high-level API also got replaced (see above). See project memory / commit history
 for that investigation if useful context.
 
+## Running with Docker
+
+The whole conversion pipeline (CityGML -> CityJSON -> 3D Tiles: Java, Python and
+Node.js together) is also packaged as a single Docker image, so it can be run without
+installing anything locally except Docker itself:
+
+    docker build -t tucbs-building .
+    docker run --rm \
+      -v "$(pwd)/data/cityjson:/app/data/cityjson" \
+      -v "$(pwd)/data/3dtiles:/app/data/3dtiles" \
+      tucbs-building
+
+The `-v` (volume) flags mount the container's output directories to the real
+`data/cityjson` and `data/3dtiles` folders on the host, so the generated files land
+in the repo as usual and survive after the container exits. This is the same pipeline
+described below (`scripts/convert_to_cityjson.sh` + `scripts/generate_3dtiles_textured.mjs`)
+running inside the container's own Java 17 + Python 3 + Node 22 environment.
+
 ## Setup
 
 Python side (cjio, pyproj, triangle):

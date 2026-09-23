@@ -5,8 +5,16 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CITYGML_TOOLS="$REPO_ROOT/tools/citygml-tools/citygml-tools.bat"
-PYTHON="/c/ProgramData/anaconda3/envs/tucbs-building/python.exe"
+# CITYGML_TOOLS ve PYTHON dis ortam degiskenleriyle ezilebilir - Windows
+# gelistirme ortaminda .bat + Windows python.exe kullaniyoruz, Docker/Linux
+# icinde ise PATH'teki citygml-tools ve python3'u (varsayilanlar).
+if [[ -f "$REPO_ROOT/tools/citygml-tools/citygml-tools.bat" ]]; then
+  DEFAULT_CITYGML_TOOLS="$REPO_ROOT/tools/citygml-tools/citygml-tools.bat"
+else
+  DEFAULT_CITYGML_TOOLS="citygml-tools"
+fi
+CITYGML_TOOLS="${CITYGML_TOOLS:-$DEFAULT_CITYGML_TOOLS}"
+PYTHON="${PYTHON:-python3}"
 RAW_DIR="$REPO_ROOT/data/raw"
 OUT_DIR="$REPO_ROOT/data/cityjson"
 EPSG=5258
@@ -26,10 +34,17 @@ for building_dir in "$RAW_DIR"/*/; do
   "$CITYGML_TOOLS" to-cityjson "$gml_file" -o "$OUT_DIR" -c --pretty-print
 
   json_file="$OUT_DIR/$id.json"
-  win_json_file="$(/usr/bin/cygpath -w "$json_file")"
+  # Git Bash'te Windows python.exe POSIX yollari (/d/...) anlamiyor, cygpath
+  # ile Windows yoluna ceviriyoruz. Docker/Linux'ta cygpath yok - POSIX yol
+  # zaten dogru oldugu icin oldugu gibi kullaniyoruz.
+  if command -v cygpath >/dev/null 2>&1; then
+    py_json_file="$(cygpath -w "$json_file")"
+  else
+    py_json_file="$json_file"
+  fi
   "$PYTHON" -c "
 import json
-path = r'$win_json_file'
+path = r'$py_json_file'
 d = json.load(open(path, encoding='utf-8'))
 d.setdefault('metadata', {})['referenceSystem'] = 'https://www.opengis.net/def/crs/EPSG/0/$EPSG'
 with open(path, 'w', encoding='utf-8') as f:

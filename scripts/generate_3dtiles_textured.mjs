@@ -146,6 +146,12 @@ async function processBuilding(id) {
 }
 
 (async () => {
+  // outDir'in var oldugundan emin ol - host'ta bu klasor onceki
+  // calistirmalardan zaten var oldugu icin bu eksiklik fark edilmemisti,
+  // temiz bir ortamda (ör. Docker container'i) ilk calistirmada ortaya
+  // cikti (2026-09-24).
+  fs.mkdirSync(outDir, { recursive: true });
+
   const ids = fs
     .readdirSync(cityjsonDir)
     .filter((f) => f.endsWith(".json"))

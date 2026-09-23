@@ -1,0 +1,9 @@
+.git
+tools/node/
+tools/node_modules/
+tools/citygml-tools/
+tools/_tiledb/
+data/cityjson/
+data/3dtiles/
+viewer/config.js
+*.md
