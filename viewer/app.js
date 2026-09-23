@@ -11,14 +11,13 @@
 
 Cesium.Ion.defaultAccessToken = window.CESIUM_ION_TOKEN;
 
-// NOT: Cesium.Terrain.fromWorldTerrain() bilerek KULLANMIYORUZ. Gerçek terrain
-// yükseklik verisi ile bizim binalarımızın EPSG:5258 kaynaklı mutlak yükseklik
-// değerleri arasında binadan binaya değişen bir uyuşmazlık var - bazı binalar
-// bu yüzden gerçek terrain yüzeyinin ALTINDA kalıp tamamen görünmez oluyordu
-// (headless test + terrain kapatılınca karşılaştırmalı olarak doğrulandı,
-// 2026-09-23). Terrain olmadan (düz ellipsoid + uydu görüntüsü) tüm binalar
-// doğru şekilde görünüyor.
-const viewer = new Cesium.Viewer("cesiumContainer", {});
+// Terrain'i tekrar açtık (2026-09-24) - scripts/generate_3dtiles_textured.mjs
+// artık her binanın yüksekliğini gerçek Cesium World Terrain rakımına göre
+// düzeltiyor (node.translation'ı kaydırarak), o yüzden terrain'in altında
+// kalma/havada asılı kalma sorunu artık yok.
+const viewer = new Cesium.Viewer("cesiumContainer", {
+  terrain: Cesium.Terrain.fromWorldTerrain(),
+});
 
 // Cesium varsayılan olarak gerçekçi güneş ışıklandırmasını kapalı tutuyor —
 // bu, düz renkli (dokusuz) yüzeylerin çatı/duvar farkı olmadan tamamen aynı
