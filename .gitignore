@@ -2,6 +2,10 @@
 tools/citygml-tools/
 tools/node/
 tools/node_modules/
+tools/_tiledb/
+
+# Cesium ion access token (personal, never commit)
+viewer/config.js
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

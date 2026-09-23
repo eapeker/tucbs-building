@@ -26,7 +26,7 @@ for building_dir in "$RAW_DIR"/*/; do
   "$CITYGML_TOOLS" to-cityjson "$gml_file" -o "$OUT_DIR" -c --pretty-print
 
   json_file="$OUT_DIR/$id.json"
-  win_json_file="$(cygpath -w "$json_file")"
+  win_json_file="$(/usr/bin/cygpath -w "$json_file")"
   "$PYTHON" -c "
 import json
 path = r'$win_json_file'
