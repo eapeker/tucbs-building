@@ -114,6 +114,10 @@ CityGML to CityJSON converter (Java, citygml4j):
     python -m http.server 8000                     # serve the repo root
     open http://localhost:8000/viewer/index.html
 
+Live demo: https://eapeker.github.io/tucbs-building/viewer/index.html
+(deployed automatically on every push to `main` — see `.github/workflows/pages.yml`;
+the Cesium ion token is injected from a repo secret at deploy time, never committed).
+
 ## PostGIS demo
 
 The 10 buildings' footprints and attributes (height, base elevation, footprint area)
