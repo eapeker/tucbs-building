@@ -112,11 +112,35 @@ CityGML to CityJSON converter (Java, citygml4j):
     python -m http.server 8000                     # serve the repo root
     open http://localhost:8000/viewer/index.html
 
+## PostGIS demo
+
+The 10 buildings' footprints and attributes (height, base elevation, footprint area)
+can be loaded into a local PostGIS database to demonstrate spatial querying. Since
+CityJSON only stores each building's bounding-box extent (not its true wall-derived
+footprint), `scripts/generate_postgis_data.py` derives a rectangular footprint from
+that bbox rather than a pixel-accurate outline — enough to demonstrate spatial
+indexing, joins, distance and area queries.
+
+Start a local PostGIS container:
+
+    docker run --name tucbs-postgis -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgis/postgis
+
+Generate the data and load it:
+
+    python scripts/generate_postgis_data.py          # data/cityjson/ -> data/postgis/buildings.sql
+    docker exec -i tucbs-postgis psql -U postgres < data/postgis/buildings.sql
+
+Run the example spatial queries (nearest buildings, total footprint area, average
+height, centroids, PostGIS-computed vs. precomputed area):
+
+    docker exec -i tucbs-postgis psql -U postgres < scripts/postgis_example_queries.sql
+
 ## Requirements
 
 - Java 17+ (for citygml-tools)
 - Conda
 - Git Bash (Windows) or any POSIX shell
+- Docker (for the containerized pipeline and/or the PostGIS demo)
 
 ## License
 
