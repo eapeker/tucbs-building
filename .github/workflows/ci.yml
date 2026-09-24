@@ -36,12 +36,7 @@ jobs:
           test -f out/3dtiles/tileset.json
           n_expected=$(ls data/raw | wc -l)
           n_glb=$(find out/3dtiles -name '*.glb' | wc -l)
-          echo "expected buildings: $n_expected, .glb files produced: $n_glb"
+          n_children=$(jq '.root.children | length' out/3dtiles/tileset.json)
+          echo "expected buildings: $n_expected, .glb files: $n_glb, tileset children: $n_children"
           [ "$n_glb" -eq "$n_expected" ]
-          python3 -c "
-import json
-t = json.load(open('out/3dtiles/tileset.json'))
-children = t['root']['children']
-assert len(children) == $n_expected, f'expected $n_expected children, got {len(children)}'
-print(f'tileset.json OK: {len(children)} building tiles')
-"
+          [ "$n_children" -eq "$n_expected" ]
