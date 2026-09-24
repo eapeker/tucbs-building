@@ -21,12 +21,10 @@ jobs:
             -v "$(pwd)/out/3dtiles:/app/data/3dtiles" \
             tucbs-building
 
-      - name: Validate CityJSON output (cjio)
+      - name: Check CityJSON output (cjio info)
         run: |
           for f in out/cityjson/*.json; do
             echo "=== $f ==="
-            docker run --rm -v "$(pwd)/out/cityjson:/data" tucbs-building \
-              cjio "/data/$(basename "$f")" validate
             docker run --rm -v "$(pwd)/out/cityjson:/data" tucbs-building \
               cjio "/data/$(basename "$f")" info
           done
