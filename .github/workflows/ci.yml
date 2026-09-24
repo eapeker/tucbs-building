@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build pipeline image
+        run: docker build -t tucbs-building .
+
+      - name: Run CityGML -> CityJSON -> 3D Tiles pipeline
+        run: |
+          mkdir -p out/cityjson out/3dtiles
+          docker run --rm \
+            -v "$(pwd)/out/cityjson:/app/data/cityjson" \
+            -v "$(pwd)/out/3dtiles:/app/data/3dtiles" \
+            tucbs-building
+
+      - name: Validate CityJSON output (cjio)
+        run: |
+          for f in out/cityjson/*.json; do
+            echo "=== $f ==="
+            docker run --rm -v "$(pwd)/out/cityjson:/data" tucbs-building \
+              cjio "/data/$(basename "$f")" validate
+            docker run --rm -v "$(pwd)/out/cityjson:/data" tucbs-building \
+              cjio "/data/$(basename "$f")" info
+          done
+
+      - name: Check 3D Tiles output
+        run: |
+          test -f out/3dtiles/tileset.json
+          n_expected=$(ls data/raw | wc -l)
+          n_glb=$(find out/3dtiles -name '*.glb' | wc -l)
+          echo "expected buildings: $n_expected, .glb files produced: $n_glb"
+          [ "$n_glb" -eq "$n_expected" ]
+          python3 -c "
+import json
+t = json.load(open('out/3dtiles/tileset.json'))
+children = t['root']['children']
+assert len(children) == $n_expected, f'expected $n_expected children, got {len(children)}'
+print(f'tileset.json OK: {len(children)} building tiles')
+"

@@ -1,5 +1,7 @@
 # tucbs-building
 
+[![CI](https://github.com/eapeker/tucbs-building/actions/workflows/ci.yml/badge.svg)](https://github.com/eapeker/tucbs-building/actions/workflows/ci.yml)
+
 Converting Turkey's national TUCBS 3D Building Model Sample Dataset (CityGML, LoD3)
 to CityJSON and 3D Tiles.
 
