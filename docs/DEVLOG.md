@@ -1,0 +1,55 @@
+# Development log
+
+Implementation notes and debugging history for the CityJSON -> 3D Tiles step.
+
+## Why `buildGeometry()` is called directly
+
+`scripts/generate_3dtiles_textured.mjs` calls `@csi-foxbyte/cityjson-to-3d-tiles`'s
+low-level `buildGeometry()` function directly, one building at a time, rather than
+its documented high-level API (`generateTileDatabaseFromCityJSON` +
+`generate3DTilesFromTileDatabase`). The high-level API silently produces zero
+geometry when given the real texture theme name ("unnamed", citygml-tools' default
+fallback theme) — no exception, just an empty tileset — somewhere in its worker-thread
+orchestration; `buildGeometry()` itself works correctly with real textures when
+called directly. The script attaches each building's real PNG texture (via
+gltf-transform) and sets `metallicFactor: 0` on every material, since the library's
+default (fully metallic, no environment map) renders flat/shadeless in CesiumJS.
+
+## Resolved issue (2026-09-23/24): buildings below the terrain
+
+Several buildings initially failed to render (or
+loaded but stayed invisible) in the CesiumJS viewer. Root cause: real-world terrain
+elevation at each building's location didn't match the buildings' own absolute height
+values (EPSG:5258 source data) closely enough (off by ~20-33m, varying per building)
+— several buildings ended up sunk below the terrain surface and were fully occluded
+from above. Fixed in `scripts/generate_3dtiles_textured.mjs`: each building's glTF
+node `translation` (an ECEF-derived offset baked in by `buildGeometry()`) is corrected
+by sampling the real Cesium World Terrain height at that location and shifting the
+node's height component by the difference — a pure vertical translation.
+
+Two things made this trickier than it sounds, both discovered by testing rather than
+assuming:
+- Sampling terrain only at each building's *center* point still left several buildings
+  visibly floating — terrain can vary by 10+ meters across a single building's own
+  footprint on sloped ground (7968: 13.5m between its own corners). Fixed by sampling
+  all 4 corners (see `scripts/sample_terrain_heights.mjs`) and using the *minimum*, so
+  no corner ends up below ground (a sloped building may sit slightly into the uphill
+  side, which reads far better visually than floating).
+- `buildGeometry()`'s node `translation` is **not** plain ECEF (x, y, z) — it stores
+  `[x, z, -y]` (a leftover of an internal Y-up conversion). Treating it as literal ECEF
+  when computing the correction gave a result that was directionally wrong but,
+  because WGS84 is nearly spherical, only *slightly* wrong for most buildings and
+  clearly wrong for others (10158) — a partial "fix" that was easy to mistake for
+  "good enough." The real fix converts to true ECEF (`x, -z, y`) before doing any
+  cartographic math, then converts back with the same permutation.
+
+`viewer/app.js` uses `Cesium.Terrain.fromWorldTerrain()` again; all 10 buildings now
+sit correctly on the real terrain surface with real textures.
+
+## Earlier pipelines
+
+An earlier hand-rolled pipeline (cjio export OBJ -> obj2gltf -> 3d-tiles-tools glbToB3dm
++ a custom ENU->ECEF transform matrix) was replaced after an unresolved axis/orientation
+bug kept placing buildings sideways or flattened. A second attempt using the library's
+own high-level API also got replaced (see above). See the commit history for that
+investigation.

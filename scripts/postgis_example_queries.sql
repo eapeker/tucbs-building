@@ -17,8 +17,10 @@ SELECT id,
 FROM buildings;
 
 -- 3. Belirli bir noktaya (ornegin 7968'in civarindaki bir koordinat)
---    250 metre icindeki binalar - ST_DWithin, mekansal index kullanan
---    klasik bir "yakinlik sorgusu" (spatial join'lerin temeli).
+--    250 metre icindeki binalar - ST_DWithin ile klasik bir "yakinlik
+--    sorgusu" (spatial join'lerin temeli). Not: footprint burada geography'ye
+--    cevrildigi icin geometry uzerindeki GIST index'i bu sorguda kullanilmaz;
+--    10 binalik demo icin fark etmez.
 SELECT id, height_m,
        ROUND(ST_Distance(
            ST_Centroid(footprint)::geography,
